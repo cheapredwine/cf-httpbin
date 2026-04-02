@@ -9,7 +9,7 @@ An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on
 ### HTTP Methods
 
 | Endpoint | Method | Description |
-|---|---|---|
+|---|---|
 | `/get` | GET | Returns GET request data |
 | `/post` | POST | Returns POST request data |
 | `/put` | PUT | Returns PUT request data |
@@ -20,7 +20,7 @@ An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on
 ### Request Inspection
 
 | Endpoint | Description |
-|---|---|---|
+|---|---|
 | `/headers` | Returns request headers |
 | `/ip` | Returns requester's IP (via `cf-connecting-ip`) |
 | `/user-agent` | Returns user-agent string |
