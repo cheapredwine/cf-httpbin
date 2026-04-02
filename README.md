@@ -2,7 +2,7 @@
 
 An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
 
-**Live:** <a href="https://cf-httpbin.jsherron-test-account.workers.dev" target="_blank">https://cf-httpbin.jsherron-test-account.workers.dev</a>
+**Live:** [https://cf-httpbin.jsherron-test-account.workers.dev](https://cf-httpbin.jsherron-test-account.workers.dev)
 
 ## Endpoints
 
