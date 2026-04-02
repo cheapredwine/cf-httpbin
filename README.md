@@ -1,6 +1,6 @@
 # cf-httpbin
 
-A [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
+An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
 
 **Live:** `https://cf-httpbin.jsherron-test-account.workers.dev`
 
