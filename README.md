@@ -22,7 +22,7 @@ An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on
 | Endpoint | Description |
 |---|---|
 | `/headers` | Returns request headers |
-| `/ip` | Returns requester's IP (via `cf-connecting-ip`) |
+| `/ip` | Returns client IP, proxy IP, and `X-Forwarded-For` chain |
 | `/user-agent` | Returns user-agent string |
 | `/cf` | Returns Cloudflare-specific metadata (Ray ID, country, colo, etc.) |
 
@@ -302,7 +302,7 @@ This Worker deploys automatically to Cloudflare Workers via the Cloudflare Dashb
 
 ## Notes
 
-- `/ip` uses `cf-connecting-ip` so you get the real client IP, not a proxy IP
+- `/ip` returns `origin` (client), `proxy` (edge), and `forwarded_for` (full chain)
 - `/delay` is capped at 10 seconds
 - `/stream-bytes` is capped at 100KB
 - Streaming responses use `ReadableStream` natively in the Workers runtime

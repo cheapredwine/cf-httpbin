@@ -31,7 +31,7 @@ export default {
         return jsonResp({ headers: headersToObj(request.headers) });
 
       if (path === '/ip')
-        return jsonResp({ origin: clientIP(request) });
+        return jsonResp(buildIPInfo(request));
 
       if (path === '/user-agent')
         return jsonResp({ 'user-agent': request.headers.get('user-agent') ?? '' });
@@ -261,6 +261,26 @@ function buildCfInfo(request) {
     device: request.headers.get('cf-device-type') ?? null,
     isWorkerSubrequest: request.headers.get('cf-worker') !== null,
     colo: request.headers.get('cf-ray')?.split('-')[1] ?? null,
+  };
+}
+
+function buildIPInfo(request) {
+  const origin = request.headers.get('cf-connecting-ip') ?? 'unknown';
+  const forwardedFor = request.headers.get('x-forwarded-for') ?? '';
+
+  // Extract proxy IP from X-Forwarded-For (last entry in chain, or unknown if empty)
+  let proxy = 'unknown';
+  if (forwardedFor) {
+    const ips = forwardedFor.split(',').map(ip => ip.trim());
+    if (ips.length > 1) {
+      proxy = ips[ips.length - 1];
+    }
+  }
+
+  return {
+    origin,
+    proxy,
+    forwarded_for: forwardedFor || null,
   };
 }
 

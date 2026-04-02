@@ -99,11 +99,29 @@ describe('cf-httpbin', () => {
       expect(json.headers['x-custom-header']).toBe('test-value');
     });
 
-    it('/ip returns client IP', async () => {
-      const resp = await makeRequest('/ip');
+    it('/ip returns client, proxy, and forwarded_for IPs', async () => {
+      const resp = await makeRequest('/ip', {
+        headers: {
+          'CF-Connecting-IP': '1.2.3.4',
+          'X-Forwarded-For': '1.2.3.4, 4.3.2.1',
+        },
+      });
       expect(resp.status).toBe(200);
       const json = await resp.json();
-      expect(json).toHaveProperty('origin');
+      expect(json.origin).toBe('1.2.3.4');
+      expect(json.proxy).toBe('4.3.2.1');
+      expect(json.forwarded_for).toBe('1.2.3.4, 4.3.2.1');
+    });
+
+    it('/ip handles missing X-Forwarded-For gracefully', async () => {
+      const resp = await makeRequest('/ip', {
+        headers: { 'CF-Connecting-IP': '1.2.3.4' },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.origin).toBe('1.2.3.4');
+      expect(json.proxy).toBe('unknown');
+      expect(json.forwarded_for).toBeNull();
     });
 
     it('/user-agent returns user-agent string', async () => {
