@@ -426,7 +426,7 @@ const INDEX_HTML = `<!DOCTYPE html>
 </head>
 <body>
   <h1>cf-httpbin</h1>
-  <p>A <a href="https://httpbin.org">httpbin</a>-compatible HTTP testing service running on <a href="https://workers.cloudflare.com">Cloudflare Workers</a>.</p>
+  <p>An <a href="https://httpbin.org">httpbin</a>-compatible HTTP testing service running on <a href="https://workers.cloudflare.com">Cloudflare Workers</a>.</p>
 
   <h2>HTTP Methods</h2>
   <table>
@@ -445,6 +445,7 @@ const INDEX_HTML = `<!DOCTYPE html>
     <tr><td><a href="/headers">/headers</a></td><td>Returns request headers</td></tr>
     <tr><td><a href="/ip">/ip</a></td><td>Returns requester's IP</td></tr>
     <tr><td><a href="/user-agent">/user-agent</a></td><td>Returns user-agent</td></tr>
+    <tr><td><a href="/cf">/cf</a></td><td>Returns Cloudflare metadata (Ray ID, country, colo)</td></tr>
   </table>
 
   <h2>Response Formats</h2>
