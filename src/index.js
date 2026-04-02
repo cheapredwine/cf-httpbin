@@ -36,6 +36,9 @@ export default {
       if (path === '/user-agent')
         return jsonResp({ 'user-agent': request.headers.get('user-agent') ?? '' });
 
+      if (path === '/cf')
+        return jsonResp(buildCfInfo(request));
+
       // ── Response Formats ──────────────────────────────────────────────────
       if (path === '/json')
         return jsonResp(SAMPLE_JSON);
@@ -237,6 +240,28 @@ function clientIP(request) {
     request.headers.get('x-forwarded-for') ??
     'unknown'
   );
+}
+
+function buildCfInfo(request) {
+  const cfVisitor = request.headers.get('cf-visitor');
+  let scheme = null;
+  if (cfVisitor) {
+    try {
+      scheme = JSON.parse(cfVisitor).scheme;
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  return {
+    ray: request.headers.get('cf-ray') ?? null,
+    country: request.headers.get('cf-ipcountry') ?? null,
+    ip: clientIP(request),
+    scheme: scheme ?? request.headers.get('x-forwarded-proto') ?? 'https',
+    device: request.headers.get('cf-device-type') ?? null,
+    isWorkerSubrequest: request.headers.get('cf-worker') !== null,
+    colo: request.headers.get('cf-ray')?.split('-')[1] ?? null,
+  };
 }
 
 async function buildReflect(request, url) {

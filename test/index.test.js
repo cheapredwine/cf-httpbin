@@ -114,6 +114,27 @@ describe('cf-httpbin', () => {
       const json = await resp.json();
       expect(json['user-agent']).toBe('TestAgent/1.0');
     });
+
+    it('/cf returns Cloudflare metadata', async () => {
+      const resp = await makeRequest('/cf', {
+        headers: {
+          'CF-Ray': '8f8f8f8f8f8f8f8f-SJC',
+          'CF-IPCountry': 'US',
+          'CF-Connecting-IP': '1.2.3.4',
+          'CF-Visitor': '{"scheme":"https"}',
+          'CF-Device-Type': 'desktop',
+        },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.ray).toBe('8f8f8f8f8f8f8f8f-SJC');
+      expect(json.country).toBe('US');
+      expect(json.ip).toBe('1.2.3.4');
+      expect(json.scheme).toBe('https');
+      expect(json.device).toBe('desktop');
+      expect(json.colo).toBe('SJC');
+      expect(json.isWorkerSubrequest).toBe(false);
+    });
   });
 
   // ── Response Formats ─────────────────────────────────────────────────────

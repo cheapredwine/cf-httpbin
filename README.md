@@ -20,10 +20,11 @@ A [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on 
 ### Request Inspection
 
 | Endpoint | Description |
-|---|---|
+|---|---|---|
 | `/headers` | Returns request headers |
 | `/ip` | Returns requester's IP (via `cf-connecting-ip`) |
 | `/user-agent` | Returns user-agent string |
+| `/cf` | Returns Cloudflare-specific metadata (Ray ID, country, colo, etc.) |
 
 ### Response Formats
 
@@ -95,6 +96,7 @@ https://cf-httpbin.jsherron-test-account.workers.dev/anything/custom-path
 https://cf-httpbin.jsherron-test-account.workers.dev/headers
 https://cf-httpbin.jsherron-test-account.workers.dev/ip
 https://cf-httpbin.jsherron-test-account.workers.dev/user-agent
+https://cf-httpbin.jsherron-test-account.workers.dev/cf
 
 # Response Formats
 https://cf-httpbin.jsherron-test-account.workers.dev/json
@@ -301,9 +303,7 @@ This Worker deploys automatically to Cloudflare Workers via the Cloudflare Dashb
 ## Notes
 
 - `/ip` uses `cf-connecting-ip` so you get the real client IP, not a proxy IP
+- `/cf` returns Cloudflare-specific metadata including Ray ID, country code, and colo (edge location)
 - `/delay` is capped at 10 seconds
 - `/stream-bytes` is capped at 100KB
 - Streaming responses use `ReadableStream` natively in the Workers runtime
-
-# TODO
-- inspect CF-specific headers
