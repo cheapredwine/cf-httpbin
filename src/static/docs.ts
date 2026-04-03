@@ -378,14 +378,44 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \
   <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/gzip
 # PowerShell automatically handles gzip decompression</code></pre>
 
+  <h2>CORS Support</h2>
+  <p>All endpoints support Cross-Origin Resource Sharing (CORS) out of the box:</p>
+  <ul>
+    <li><code>Access-Control-Allow-Origin: *</code> on all responses</li>
+    <li>Preflight <code>OPTIONS</code> requests return 204 with appropriate headers</li>
+    <li>Supported methods: GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD</li>
+  </ul>
+
+  <h2>Security Headers</h2>
+  <p>All responses include security headers:</p>
+  <ul>
+    <li><code>X-Content-Type-Options: nosniff</code></li>
+    <li><code>X-Frame-Options: DENY</code></li>
+    <li><code>X-XSS-Protection: 1; mode=block</code></li>
+    <li><code>Referrer-Policy: strict-origin-when-cross-origin</code></li>
+  </ul>
+
+  <h2>Error Responses</h2>
+  <p>Error responses return structured JSON:</p>
+  <pre><code>{
+  "error": "Invalid status code",
+  "status": 400
+}</code></pre>
+
+  <h2>Limits</h2>
+  <ul>
+    <li>Maximum request body size: <strong>10MB</strong></li>
+    <li>Maximum delay: <strong>10 seconds</strong></li>
+    <li>Maximum stream items: <strong>100</strong></li>
+    <li>Maximum bytes (streaming or direct): <strong>100KB</strong></li>
+  </ul>
+
   <h2>Notes</h2>
   <ul>
     <li>All endpoints return JSON unless otherwise noted</li>
     <li><code>/ip</code> returns <code>origin</code> (client IP), <code>proxy</code> (edge IP), and <code>forwarded_for</code> (full X-Forwarded-For chain)</li>
-    <li><code>/delay</code> is capped at 10 seconds</li>
-    <li><code>/stream</code> is capped at 100 items</li>
-    <li><code>/stream-bytes</code> and <code>/bytes</code> are capped at 100KB</li>
     <li>All responses are generated at the edge on Cloudflare's global network</li>
+    <li>Request logging is enabled for monitoring and debugging</li>
   </ul>
 
   <footer>
