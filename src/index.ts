@@ -1,4 +1,4 @@
-// cf-httpbin — httpbin.org-compatible Cloudflare Worker
+// flarebin — httpbin.org-inspired HTTP testing service for Cloudflare Workers
 
 import type { CFRequest } from './types';
 import { Router } from './utils/router';

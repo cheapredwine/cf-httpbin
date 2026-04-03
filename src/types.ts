@@ -1,5 +1,5 @@
 /**
- * Core type definitions for cf-httpbin
+ * Core type definitions for flarebin
  */
 
 import type { CfProperties } from '@cloudflare/workers-types';

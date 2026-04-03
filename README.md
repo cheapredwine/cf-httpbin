@@ -1,6 +1,6 @@
 # flarebin
 
-An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
+An [httpbin.org](https://httpbin.org)-inspired HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
 
 **Live:** [https://flarebin.jsherron-test-account.workers.dev](https://flarebin.jsherron-test-account.workers.dev)
 
