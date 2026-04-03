@@ -39,10 +39,33 @@ export function parseCookies(cookieHeader: string): CookieMap {
 }
 
 /**
- * Create a JSON response with proper headers
+ * Determine if JSON should be pretty-printed based on request
+ * Checks for ?pretty=1/0 query param or Accept: text/html header
  */
-export function jsonResponse(data: unknown, status = 200): Response {
-  return Response.json(data, {
+export function shouldPrettyPrint(request: Request): boolean {
+  const url = new URL(request.url);
+  const prettyParam = url.searchParams.get('pretty');
+  const acceptsHtml = request.headers.get('accept')?.includes('text/html') ?? false;
+
+  // Explicit override via query param, or auto-detect browser
+  return prettyParam === '1' || (prettyParam !== '0' && acceptsHtml);
+}
+
+/**
+ * Create a JSON response with proper headers
+ * Automatically pretty-prints JSON for browsers (detected via Accept header)
+ * Can be overridden with ?pretty=1 (force on) or ?pretty=0 (force off)
+ */
+export function jsonResponse(
+  data: unknown,
+  request: Request,
+  status = 200
+): Response {
+  const body = shouldPrettyPrint(request)
+    ? JSON.stringify(data, null, 2)
+    : JSON.stringify(data);
+
+  return new Response(body, {
     status,
     headers: { 'content-type': 'application/json' },
   });

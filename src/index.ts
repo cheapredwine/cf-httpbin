@@ -2,7 +2,7 @@
 
 import type { Env, ReflectData, IPInfo, CFMetadata } from './types';
 import { STATUS_TEXTS } from './types';
-import { headersToObj, getClientIP, parseCookies, jsonResponse, textResponse } from './utils/headers';
+import { headersToObj, getClientIP, parseCookies, jsonResponse, textResponse, shouldPrettyPrint } from './utils/headers';
 import { gzip, deflate } from './utils/compression';
 import { SAMPLE_JSON, SAMPLE_HTML, SAMPLE_XML, SAMPLE_UTF8, INDEX_HTML } from './static/content';
 import { FAVICON_SVG, FAVICON_ICO_SVG } from './static/favicon';
@@ -17,39 +17,39 @@ export default {
     try {
       // ── HTTP Methods ──────────────────────────────────────────────────────
       if (path === '/get' && method === 'GET')
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       if (path === '/post' && method === 'POST')
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       if (path === '/put' && method === 'PUT')
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       if (path === '/delete' && method === 'DELETE')
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       if (path === '/patch' && method === 'PATCH')
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       if (path === '/anything' || path.startsWith('/anything/'))
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
 
       // ── Request Inspection ────────────────────────────────────────────────
       if (path === '/headers')
-        return jsonResponse({ headers: headersToObj(request.headers) });
+        return jsonResponse({ headers: headersToObj(request.headers) }, request);
 
       if (path === '/ip')
-        return jsonResponse(buildIPInfo(request));
+        return jsonResponse(buildIPInfo(request), request);
 
       if (path === '/user-agent')
-        return jsonResponse({ 'user-agent': request.headers.get('user-agent') ?? '' });
+        return jsonResponse({ 'user-agent': request.headers.get('user-agent') ?? '' }, request);
 
       if (path === '/cf')
-        return jsonResponse(buildCfInfo(request));
+        return jsonResponse(buildCfInfo(request), request);
 
       // ── Response Formats ──────────────────────────────────────────────────
       if (path === '/json')
-        return jsonResponse(SAMPLE_JSON);
+        return jsonResponse(SAMPLE_JSON, request);
 
       if (path === '/html')
         return textResponse(SAMPLE_HTML, 200, 'text/html; charset=utf-8');
@@ -87,13 +87,13 @@ export default {
 
       // ── Utilities ─────────────────────────────────────────────────────────
       if (path === '/uuid')
-        return jsonResponse({ uuid: crypto.randomUUID() });
+        return jsonResponse({ uuid: crypto.randomUUID() }, request);
 
       if (path.startsWith('/base64/')) {
         const encoded = path.slice('/base64/'.length);
         try {
           const decoded = atob(encoded);
-          return jsonResponse({ encoded, decoded });
+          return jsonResponse({ encoded, decoded }, request);
         } catch {
           return textResponse('Invalid base64', 400);
         }
@@ -113,7 +113,10 @@ export default {
 
       // ── Compression ───────────────────────────────────────────────────────
       if (path === '/gzip') {
-        const data = JSON.stringify(await buildReflect(request, url));
+        const reflect = await buildReflect(request, url);
+        const data = shouldPrettyPrint(request)
+          ? JSON.stringify(reflect, null, 2)
+          : JSON.stringify(reflect);
         const compressed = await gzip(data);
         return new Response(compressed, {
           headers: {
@@ -124,7 +127,10 @@ export default {
       }
 
       if (path === '/deflate') {
-        const data = JSON.stringify(await buildReflect(request, url));
+        const reflect = await buildReflect(request, url);
+        const data = shouldPrettyPrint(request)
+          ? JSON.stringify(reflect, null, 2)
+          : JSON.stringify(reflect);
         const compressed = await deflate(data);
         return new Response(compressed, {
           headers: {
@@ -177,7 +183,7 @@ export default {
         const secs = Math.min(parseFloat(path.slice('/delay/'.length)), 10);
         if (isNaN(secs) || secs < 0) return textResponse('Invalid delay', 400);
         await sleep(secs * 1000);
-        return jsonResponse(await buildReflect(request, url));
+        return jsonResponse(await buildReflect(request, url), request);
       }
 
       // ── Auth ──────────────────────────────────────────────────────────────
@@ -196,7 +202,7 @@ export default {
         if (user !== expectedUser || pass !== expectedPass) {
           return textResponse('Forbidden', 403);
         }
-        return jsonResponse({ authenticated: true, user });
+        return jsonResponse({ authenticated: true, user }, request);
       }
 
       if (path === '/bearer') {
@@ -207,13 +213,13 @@ export default {
             headers: { 'www-authenticate': 'Bearer' },
           });
         }
-        return jsonResponse({ authenticated: true, token: authHeader.slice(7) });
+        return jsonResponse({ authenticated: true, token: authHeader.slice(7) }, request);
       }
 
       // ── Cookies ───────────────────────────────────────────────────────────
       if (path === '/cookies') {
         const cookies = parseCookies(request.headers.get('cookie') ?? '');
-        return jsonResponse({ cookies });
+        return jsonResponse({ cookies }, request);
       }
 
       if (path === '/cookies/set') {
@@ -237,11 +243,14 @@ export default {
         const n = Math.min(parseInt(path.slice('/stream/'.length), 10), 100);
         if (isNaN(n) || n < 1) return textResponse('Invalid count', 400);
         const reflect = await buildReflect(request, url);
+        const prettyPrint = shouldPrettyPrint(request);
         const stream = new ReadableStream({
           async start(controller) {
             const enc = new TextEncoder();
             for (let i = 0; i < n; i++) {
-              const line = JSON.stringify({ ...reflect, id: i }) + '\n';
+              const line = prettyPrint
+                ? JSON.stringify({ ...reflect, id: i }, null, 2) + '\n'
+                : JSON.stringify({ ...reflect, id: i }) + '\n';
               controller.enqueue(enc.encode(line));
             }
             controller.close();

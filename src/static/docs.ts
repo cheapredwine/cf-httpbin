@@ -114,6 +114,22 @@ export const DOCS_HTML = `<!DOCTYPE html>
     <p>Complete reference for all endpoints and usage examples</p>
   </header>
 
+  <h2>JSON Formatting</h2>
+  <p>All JSON responses are automatically pretty-printed (indented) when accessed from a browser for better readability on mobile and desktop. API clients like curl receive minified JSON by default for efficiency.</p>
+  
+  <p><strong>Override behavior:</strong></p>
+  <ul>
+    <li>Add <code>?pretty=1</code> to any endpoint to force pretty-printing (useful for curl)</li>
+    <li>Add <code>?pretty=0</code> to any endpoint to force minified JSON (useful in browsers)</li>
+  </ul>
+  
+  <p><strong>Examples:</strong></p>
+  <pre><code># Force pretty-print in curl
+curl "https://cf-httpbin.jsherron-test-account.workers.dev/get?pretty=1"
+
+# Get minified JSON in browser
+https://cf-httpbin.jsherron-test-account.workers.dev/get?pretty=0</code></pre>
+
   <h2>Quick Examples</h2>
   
   <h3>Test a GET request</h3>

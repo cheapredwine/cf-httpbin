@@ -169,7 +169,7 @@ export const INDEX_HTML = `<!DOCTYPE html>
   </header>
 
   <div class="hint">
-    <strong>💡 Quick Start:</strong> Click any endpoint below to try it instantly, or use <code>curl</code> to test programmatically. All endpoints return JSON unless noted.
+    <strong>💡 Quick Start:</strong> Click any endpoint below to try it instantly, or use <code>curl</code> to test programmatically. All endpoints return JSON unless noted. Browser requests get pretty-printed JSON automatically (add <code>?pretty=0</code> to disable or <code>?pretty=1</code> to force).
   </div>
 
   <h2>HTTP Methods</h2>
