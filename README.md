@@ -1,8 +1,8 @@
-# cf-httpbin
+# flarebin
 
 An [httpbin.org](https://httpbin.org)-compatible HTTP testing service running on [Cloudflare Workers](https://workers.cloudflare.com). No servers, no containers — just a Worker deployed globally on Cloudflare's edge.
 
-**Live:** [https://cf-httpbin.jsherron-test-account.workers.dev](https://cf-httpbin.jsherron-test-account.workers.dev)
+**Live:** [https://flarebin.jsherron-test-account.workers.dev](https://flarebin.jsherron-test-account.workers.dev)
 
 ## Endpoints
 
@@ -148,54 +148,54 @@ Paste these directly into a browser:
 
 ```
 # HTTP Methods
-https://cf-httpbin.jsherron-test-account.workers.dev/get
-https://cf-httpbin.jsherron-test-account.workers.dev/anything
-https://cf-httpbin.jsherron-test-account.workers.dev/anything/custom-path
+https://flarebin.jsherron-test-account.workers.dev/get
+https://flarebin.jsherron-test-account.workers.dev/anything
+https://flarebin.jsherron-test-account.workers.dev/anything/custom-path
 
 # Request Inspection
-https://cf-httpbin.jsherron-test-account.workers.dev/headers
-https://cf-httpbin.jsherron-test-account.workers.dev/ip
-https://cf-httpbin.jsherron-test-account.workers.dev/user-agent
-https://cf-httpbin.jsherron-test-account.workers.dev/cf
+https://flarebin.jsherron-test-account.workers.dev/headers
+https://flarebin.jsherron-test-account.workers.dev/ip
+https://flarebin.jsherron-test-account.workers.dev/user-agent
+https://flarebin.jsherron-test-account.workers.dev/cf
 
 # Response Formats
-https://cf-httpbin.jsherron-test-account.workers.dev/json
-https://cf-httpbin.jsherron-test-account.workers.dev/html
-https://cf-httpbin.jsherron-test-account.workers.dev/xml
-https://cf-httpbin.jsherron-test-account.workers.dev/robots.txt
-https://cf-httpbin.jsherron-test-account.workers.dev/deny
-https://cf-httpbin.jsherron-test-account.workers.dev/encoding/utf8
+https://flarebin.jsherron-test-account.workers.dev/json
+https://flarebin.jsherron-test-account.workers.dev/html
+https://flarebin.jsherron-test-account.workers.dev/xml
+https://flarebin.jsherron-test-account.workers.dev/robots.txt
+https://flarebin.jsherron-test-account.workers.dev/deny
+https://flarebin.jsherron-test-account.workers.dev/encoding/utf8
 
 # Status Codes
-https://cf-httpbin.jsherron-test-account.workers.dev/status/200
-https://cf-httpbin.jsherron-test-account.workers.dev/status/404
-https://cf-httpbin.jsherron-test-account.workers.dev/status/418
-https://cf-httpbin.jsherron-test-account.workers.dev/status/500
-https://cf-httpbin.jsherron-test-account.workers.dev/status/200,404,500
+https://flarebin.jsherron-test-account.workers.dev/status/200
+https://flarebin.jsherron-test-account.workers.dev/status/404
+https://flarebin.jsherron-test-account.workers.dev/status/418
+https://flarebin.jsherron-test-account.workers.dev/status/500
+https://flarebin.jsherron-test-account.workers.dev/status/200,404,500
 
 # Redirects
-https://cf-httpbin.jsherron-test-account.workers.dev/redirect/3
-https://cf-httpbin.jsherron-test-account.workers.dev/absolute-redirect/3
-https://cf-httpbin.jsherron-test-account.workers.dev/relative-redirect/3
-https://cf-httpbin.jsherron-test-account.workers.dev/redirect-to?url=https://cloudflare.com
-https://cf-httpbin.jsherron-test-account.workers.dev/redirect-to?url=https://cloudflare.com&status_code=301
+https://flarebin.jsherron-test-account.workers.dev/redirect/3
+https://flarebin.jsherron-test-account.workers.dev/absolute-redirect/3
+https://flarebin.jsherron-test-account.workers.dev/relative-redirect/3
+https://flarebin.jsherron-test-account.workers.dev/redirect-to?url=https://cloudflare.com
+https://flarebin.jsherron-test-account.workers.dev/redirect-to?url=https://cloudflare.com&status_code=301
 
 # Delays
-https://cf-httpbin.jsherron-test-account.workers.dev/delay/2
-https://cf-httpbin.jsherron-test-account.workers.dev/delay/5
+https://flarebin.jsherron-test-account.workers.dev/delay/2
+https://flarebin.jsherron-test-account.workers.dev/delay/5
 
 # Auth (browser will prompt for credentials)
-https://cf-httpbin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass
-https://cf-httpbin.jsherron-test-account.workers.dev/bearer
+https://flarebin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass
+https://flarebin.jsherron-test-account.workers.dev/bearer
 
 # Cookies
-https://cf-httpbin.jsherron-test-account.workers.dev/cookies
-https://cf-httpbin.jsherron-test-account.workers.dev/cookies/set?foo=bar&baz=qux
-https://cf-httpbin.jsherron-test-account.workers.dev/cookies/delete?foo=
+https://flarebin.jsherron-test-account.workers.dev/cookies
+https://flarebin.jsherron-test-account.workers.dev/cookies/set?foo=bar&baz=qux
+https://flarebin.jsherron-test-account.workers.dev/cookies/delete?foo=
 
 # Streaming
-https://cf-httpbin.jsherron-test-account.workers.dev/stream/5
-https://cf-httpbin.jsherron-test-account.workers.dev/stream-bytes/1024
+https://flarebin.jsherron-test-account.workers.dev/stream/5
+https://flarebin.jsherron-test-account.workers.dev/stream-bytes/1024
 ```
 
 ## Examples
@@ -203,7 +203,7 @@ https://cf-httpbin.jsherron-test-account.workers.dev/stream-bytes/1024
 ### macOS / Linux (curl)
 
 ```bash
-BASE=https://cf-httpbin.jsherron-test-account.workers.dev
+BASE=https://flarebin.jsherron-test-account.workers.dev
 
 # GET reflection
 curl $BASE/get
@@ -258,7 +258,7 @@ curl $BASE/stream-bytes/1024
 ### Windows (PowerShell)
 
 ```powershell
-$BASE = "https://cf-httpbin.jsherron-test-account.workers.dev"
+$BASE = "https://flarebin.jsherron-test-account.workers.dev"
 
 # GET reflection
 Invoke-RestMethod "$BASE/get"
@@ -391,7 +391,7 @@ This project deploys automatically to Cloudflare Workers on every push to `main`
 
 **Step 3: Add Secrets to GitHub**
 
-1. Go to your GitHub repository: `https://github.com/cheapredwine/cf-httpbin`
+1. Go to your GitHub repository: `https://github.com/cheapredwine/flarebin`
 2. Click **Settings** → **Secrets and variables** → **Actions**
 3. Click **New repository secret**
 4. Add the first secret:
@@ -411,7 +411,7 @@ This project deploys automatically to Cloudflare Workers on every push to `main`
 - Every push to `main` triggers the deploy workflow (`.github/workflows/deploy.yml`)
 - The workflow runs `npm run bundle` to create `dist/bundle.js`
 - Wrangler deploys the bundle to Cloudflare Workers
-- Your Worker is live at `https://cf-httpbin.YOUR_SUBDOMAIN.workers.dev`
+- Your Worker is live at `https://flarebin.YOUR_SUBDOMAIN.workers.dev`
 
 **Manual Deployment:**
 

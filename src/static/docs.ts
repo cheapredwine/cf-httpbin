@@ -5,11 +5,11 @@
 export const DOCS_HTML = `<!DOCTYPE html>
 <html>
 <head>
-  <title>Documentation | cf-httpbin</title>
+  <title>Documentation | flarebin</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Complete documentation for cf-httpbin HTTP testing service">
+  <meta name="description" content="Complete documentation for flarebin HTTP testing service">
   <style>
     * { box-sizing: border-box; }
     body { 
@@ -110,7 +110,7 @@ export const DOCS_HTML = `<!DOCTYPE html>
   <a href="/" class="back-link">← Back to Home</a>
   
   <header>
-    <h1>cf-httpbin Documentation</h1>
+    <h1>flarebin Documentation</h1>
     <p>Complete reference for all endpoints and usage examples</p>
   </header>
 
@@ -125,46 +125,46 @@ export const DOCS_HTML = `<!DOCTYPE html>
   
   <p><strong>Examples:</strong></p>
   <pre><code># Force pretty-print in curl
-curl "https://cf-httpbin.jsherron-test-account.workers.dev/get?pretty=1"
+curl "https://flarebin.jsherron-test-account.workers.dev/get?pretty=1"
 
 # Get minified JSON in browser
-https://cf-httpbin.jsherron-test-account.workers.dev/get?pretty=0</code></pre>
+https://flarebin.jsherron-test-account.workers.dev/get?pretty=0</code></pre>
 
   <h2>Quick Examples</h2>
   
   <h3>Test a GET request</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/get</code></pre>
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/get</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/get</code></pre>
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/get</code></pre>
   
   <h3>Test a POST with JSON</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl -X POST https://cf-httpbin.jsherron-test-account.workers.dev/post \\
+  <pre><code>curl -X POST https://flarebin.jsherron-test-account.workers.dev/post \\
   -H "Content-Type: application/json" \\
   -d '{"hello": "world"}'</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod -Method POST https://cf-httpbin.jsherron-test-account.workers.dev/post \`
+  <pre><code>Invoke-RestMethod -Method POST https://flarebin.jsherron-test-account.workers.dev/post \`
   -ContentType "application/json" \`
   -Body '{"hello": "world"}'</code></pre>
   
   <h3>Check your IP address</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/ip</code></pre>
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/ip</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/ip</code></pre>
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/ip</code></pre>
   
   <h3>Test Basic Authentication</h3>
   <h4>macOS / Linux (curl)</h4>
   <pre><code>curl -u myuser:mypass \\
-  https://cf-httpbin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass</code></pre>
+  https://flarebin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass</code></pre>
   
   <h4>Windows (PowerShell)</h4>
   <pre><code>$cred = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("myuser:mypass"))
-Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass \`
+Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass \`
   -Headers @{ Authorization = "Basic $cred" }</code></pre>
 
   <h2>HTTP Methods</h2>
@@ -192,7 +192,7 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/basic-aut
   "json": null,
   "method": "GET",
   "origin": "1.2.3.4",
-  "url": "https://cf-httpbin.example.com/get?foo=bar"
+  "url": "https://flarebin.example.com/get?foo=bar"
 }</code></pre>
 
   <h2>Request Inspection</h2>
@@ -224,16 +224,16 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/basic-aut
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/status/418
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/status/418
 # Returns: 418 I'm a Teapot
 
-curl -I https://cf-httpbin.jsherron-test-account.workers.dev/status/418
+curl -I https://flarebin.jsherron-test-account.workers.dev/status/418
 # Returns HTTP/2 418 with header info</code></pre>
   
   <h4>Windows (PowerShell)</h4>
   <pre><code># Get the response body
 try {
-  Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/status/418
+  Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/status/418
 } catch {
   $_.ErrorDetails.Message
 }
@@ -241,7 +241,7 @@ try {
 
 # Get just the status code
 try { 
-  Invoke-WebRequest https://cf-httpbin.jsherron-test-account.workers.dev/status/418 
+  Invoke-WebRequest https://flarebin.jsherron-test-account.workers.dev/status/418 
 } catch { 
   $_.Exception.Response.StatusCode 
 }
@@ -259,11 +259,11 @@ try {
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl -L https://cf-httpbin.jsherron-test-account.workers.dev/redirect/3
+  <pre><code>curl -L https://flarebin.jsherron-test-account.workers.dev/redirect/3
 # Follows 3 redirects then returns /get data</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/redirect/3
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/redirect/3
 # PowerShell follows redirects automatically</code></pre>
 
   <h2>Delays</h2>
@@ -274,11 +274,11 @@ try {
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/delay/2
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/delay/2
 # Waits 2 seconds then returns /get data</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/delay/2
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/delay/2
 # Waits 2 seconds then returns /get data</code></pre>
 
   <h2>Authentication</h2>
@@ -291,20 +291,20 @@ try {
   <h3>Example - Basic Auth</h3>
   <h4>macOS / Linux (curl)</h4>
   <pre><code>curl -u myuser:mypass \\
-  https://cf-httpbin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass</code></pre>
+  https://flarebin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass</code></pre>
   
   <h4>Windows (PowerShell)</h4>
   <pre><code>$cred = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("myuser:mypass"))
-Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass \`
+Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/basic-auth/myuser/mypass \`
   -Headers @{ Authorization = "Basic $cred" }</code></pre>
 
   <h3>Example - Bearer Token</h3>
   <h4>macOS / Linux (curl)</h4>
   <pre><code>curl -H "Authorization: Bearer mytoken123" \\
-  https://cf-httpbin.jsherron-test-account.workers.dev/bearer</code></pre>
+  https://flarebin.jsherron-test-account.workers.dev/bearer</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/bearer \`
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/bearer \`
   -Headers @{ Authorization = "Bearer mytoken123" }</code></pre>
 
   <h2>Cookies</h2>
@@ -318,14 +318,14 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/basic-aut
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
   <pre><code>curl -c cookies.txt \\
-  "https://cf-httpbin.jsherron-test-account.workers.dev/cookies/set?foo=bar"
-curl -b cookies.txt https://cf-httpbin.jsherron-test-account.workers.dev/cookies</code></pre>
+  "https://flarebin.jsherron-test-account.workers.dev/cookies/set?foo=bar"
+curl -b cookies.txt https://flarebin.jsherron-test-account.workers.dev/cookies</code></pre>
   
   <h4>Windows (PowerShell)</h4>
   <pre><code>$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-Invoke-RestMethod "https://cf-httpbin.jsherron-test-account.workers.dev/cookies/set?foo=bar" \`
+Invoke-RestMethod "https://flarebin.jsherron-test-account.workers.dev/cookies/set?foo=bar" \`
   -WebSession $session
-Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \`
+Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/cookies \`
   -WebSession $session</code></pre>
 
   <h2>Streaming</h2>
@@ -338,11 +338,11 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/stream/5
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/stream/5
 # Streams 5 JSON lines</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/stream/5
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/stream/5
 # Returns all 5 JSON lines</code></pre>
 
   <h2>Utilities</h2>
@@ -355,11 +355,11 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl https://cf-httpbin.jsherron-test-account.workers.dev/uuid
+  <pre><code>curl https://flarebin.jsherron-test-account.workers.dev/uuid
 # Returns: {"uuid": "550e8400-e29b-41d4-a716-446655440000"}</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/uuid
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/uuid
 # Returns: @{uuid=550e8400-e29b-41d4-a716-446655440000}</code></pre>
 
   <h2>Compression</h2>
@@ -371,11 +371,11 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \
 
   <h3>Example</h3>
   <h4>macOS / Linux (curl)</h4>
-  <pre><code>curl --compressed https://cf-httpbin.jsherron-test-account.workers.dev/gzip
+  <pre><code>curl --compressed https://flarebin.jsherron-test-account.workers.dev/gzip
 # curl automatically decompresses the response</code></pre>
   
   <h4>Windows (PowerShell)</h4>
-  <pre><code>Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/gzip
+  <pre><code>Invoke-RestMethod https://flarebin.jsherron-test-account.workers.dev/gzip
 # PowerShell automatically handles gzip decompression</code></pre>
 
   <h2>CORS Support</h2>
@@ -420,9 +420,9 @@ Invoke-RestMethod https://cf-httpbin.jsherron-test-account.workers.dev/cookies \
 
   <footer>
     <p>
-      <strong>cf-httpbin</strong> | 
+      <strong>flarebin</strong> | 
       <a href="/">Home</a> | 
-      <a href="https://github.com/jsherron/cf-httpbin">GitHub</a> | 
+      <a href="https://github.com/jsherron/flarebin">GitHub</a> | 
       Running on <a href="https://workers.cloudflare.com">Cloudflare Workers</a>
     </p>
   </footer>

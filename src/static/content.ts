@@ -60,7 +60,7 @@ export const SAMPLE_UTF8 = `<!DOCTYPE html>
 export const INDEX_HTML = `<!DOCTYPE html>
 <html>
 <head>
-  <title>cf-httpbin | HTTP Testing Service</title>
+  <title>flarebin | HTTP Testing Service</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -163,7 +163,7 @@ export const INDEX_HTML = `<!DOCTYPE html>
 </head>
 <body>
   <header>
-    <h1>cf-httpbin</h1>
+    <h1>flarebin</h1>
     <p class="subtitle">HTTP testing service for debugging, testing, and development.</p>
     <p>Inspired by <a href="https://httpbin.org">httpbin.org</a>, running on <a href="https://workers.cloudflare.com">Cloudflare Workers</a>. <a href="/docs">View Documentation →</a></p>
   </header>
@@ -185,7 +185,7 @@ export const INDEX_HTML = `<!DOCTYPE html>
   </table>
   
   <div class="example">
-    $ curl -X POST https://cf-httpbin.jsherron-test-account.workers.dev/post \\<br>
+    $ curl -X POST https://flarebin.jsherron-test-account.workers.dev/post \\<br>
     &nbsp;&nbsp;-H "Content-Type: application/json" \\<br>
     &nbsp;&nbsp;-d '{"hello": "world"}'
   </div>
@@ -272,9 +272,9 @@ export const INDEX_HTML = `<!DOCTYPE html>
 
   <footer>
     <p>
-      <strong>cf-httpbin</strong> | 
+      <strong>flarebin</strong> | 
       <a href="/docs">Documentation</a> | 
-      <a href="https://github.com/jsherron/cf-httpbin">GitHub</a> | 
+      <a href="https://github.com/jsherron/flarebin">GitHub</a> | 
       Running on <a href="https://workers.cloudflare.com">Cloudflare Workers</a>
     </p>
   </footer>
