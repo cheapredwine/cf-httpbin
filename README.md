@@ -324,12 +324,38 @@ This project deploys automatically to Cloudflare Workers on every push to `main`
 
 **Setup GitHub Secrets:**
 
-1. Go to your repository settings: `https://github.com/YOUR_USERNAME/cf-httpbin/settings/secrets/actions`
-2. Add the following secrets:
-   - **`CLOUDFLARE_API_TOKEN`**: Create at [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
-     - Use the "Edit Cloudflare Workers" template, OR
-     - Create a custom token with `Account > Workers Scripts > Edit` permission
-   - **`CLOUDFLARE_ACCOUNT_ID`**: Find in your [Cloudflare dashboard](https://dash.cloudflare.com/) (visible in the URL or Workers overview page)
+**Step 1: Get your Cloudflare Account ID**
+
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Go to **Workers & Pages** in the left sidebar
+3. Your Account ID is displayed on the right side of the page, or in the URL: `dash.cloudflare.com/{ACCOUNT_ID}/...`
+4. Copy this value - you'll add it to GitHub in Step 3
+
+**Step 2: Create a Cloudflare API Token**
+
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+2. Click **Create Token**
+3. Use the **"Edit Cloudflare Workers"** template (click "Use template")
+4. Review the permissions (should include `Account > Workers Scripts > Edit`)
+5. Click **Continue to summary**, then **Create Token**
+6. **Copy the token immediately** (you can't see it again after leaving this page)
+
+**Step 3: Add Secrets to GitHub**
+
+1. Go to your GitHub repository: `https://github.com/cheapredwine/cf-httpbin`
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+4. Add the first secret:
+   - Name: `CLOUDFLARE_API_TOKEN`
+   - Value: Paste the token from Step 2
+   - Click **Add secret**
+5. Click **New repository secret** again
+6. Add the second secret:
+   - Name: `CLOUDFLARE_ACCOUNT_ID`
+   - Value: Paste the Account ID from Step 1
+   - Click **Add secret**
+
+**That's it!** The next push to `main` will automatically deploy your Worker.
 
 **How it works:**
 
