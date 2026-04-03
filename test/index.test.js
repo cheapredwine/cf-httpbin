@@ -584,7 +584,7 @@ describe('cf-httpbin', () => {
       expect(resp.status).toBe(200);
       expect(resp.headers.get('content-type')).toContain('text/html');
       const text = await resp.text();
-      expect(text).toContain('cf-httpbin');
+      expect(text).toContain('flarebin');
       expect(text).toContain('<table>');
     });
 
@@ -765,7 +765,7 @@ describe('cf-httpbin', () => {
       expect(resp.headers.get('content-type')).toContain('text/html');
       const text = await resp.text();
       expect(text).toContain('Documentation');
-      expect(text).toContain('cf-httpbin');
+      expect(text).toContain('flarebin');
     });
 
     it('/favicon.svg returns SVG favicon', async () => {

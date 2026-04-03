@@ -1,3 +1,16 @@
 node_modules/
 .wrangler/
 dist/
+
+# Environment files (secrets)
+.env
+.env.*
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Test coverage
+coverage/
