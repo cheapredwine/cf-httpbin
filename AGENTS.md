@@ -19,3 +19,14 @@ npm test    # Run full test suite
 - Follow existing code style in the project
 - Do not commit files that contain secrets (.env, credentials.json, etc.)
 - Prefer readability over terseness within reason
+
+## Commit Message Guidelines
+
+Use conventional commit prefixes:
+- `feat:` — New feature or functionality
+- `fix:` — Bug fix
+- `docs:` — Documentation changes only
+- `style:` — Code style changes (formatting, semicolons, etc.)
+- `refactor:` — Code refactoring without changing functionality
+- `test:` — Adding or updating tests
+- `chore:` — Maintenance tasks (build, deps, etc.)
