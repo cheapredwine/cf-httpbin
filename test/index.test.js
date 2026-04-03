@@ -1,11 +1,34 @@
+/**
+ * @fileoverview Test suite for flarebin
+ *
+ * These tests use Vitest (a testing framework) and Miniflare (local Workers simulator).
+ *
+ * Test Structure:
+ * - describe() groups related tests together
+ * - it() defines an individual test case
+ * - expect() makes assertions about values
+ * - beforeAll() runs once before all tests (setup)
+ * - afterAll() runs once after all tests (cleanup)
+ *
+ * async/await: Tests can use async functions because HTTP operations are asynchronous.
+ * The await keyword pauses execution until the Promise resolves.
+ */
+
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Miniflare } from 'miniflare';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+// Get the directory of the current file (needed for resolving paths)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-describe('cf-httpbin', () => {
+/**
+ * Main test suite
+ *
+ * Miniflare simulates the Cloudflare Workers runtime locally.
+ * It loads our bundled Worker and lets us make requests to it.
+ */
+describe('flarebin', () => {
   let mf;
 
   beforeAll(async () => {
