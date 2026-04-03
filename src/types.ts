@@ -2,6 +2,13 @@
  * Core type definitions for cf-httpbin
  */
 
+import type { CfProperties } from '@cloudflare/workers-types';
+
+/** Extended Request type with Cloudflare properties */
+export interface CFRequest extends Request {
+  cf?: CfProperties;
+}
+
 export interface IPInfo {
   origin: string;
   proxy: string;
@@ -75,15 +82,32 @@ export interface CookieMap {
 
 /** Route handler function type */
 export type RouteHandler = (
-  request: Request,
-  url: URL
+  request: CFRequest,
+  url: URL,
+  match?: RegExpMatchArray
 ) => Response | Promise<Response>;
 
 /** Route definition */
 export interface Route {
-  pattern: string | RegExp;
+  pattern: RegExp;
   methods: string[];
   handler: RouteHandler;
+}
+
+/** Middleware function type */
+export type Middleware = (
+  request: CFRequest,
+  url: URL
+) => Response | null | Promise<Response | null>;
+
+/** Request log entry */
+export interface RequestLog {
+  method: string;
+  path: string;
+  ip: string;
+  userAgent: string | null;
+  timestamp: string;
+  ray: string | null;
 }
 
 /** Environment bindings (empty for now, extend as needed) */

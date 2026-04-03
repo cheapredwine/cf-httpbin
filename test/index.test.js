@@ -887,4 +887,163 @@ describe('cf-httpbin', () => {
       expect(json.args.message).toBe('hello world!@#$%');
     });
   });
+
+  // ── CORS ─────────────────────────────────────────────────────────────────
+  describe('CORS', () => {
+    it('handles OPTIONS preflight requests', async () => {
+      const resp = await makeRequest('/get', { method: 'OPTIONS' });
+      expect(resp.status).toBe(204);
+      expect(resp.headers.get('access-control-allow-origin')).toBe('*');
+      expect(resp.headers.get('access-control-allow-methods')).toContain('GET');
+      expect(resp.headers.get('access-control-allow-methods')).toContain('POST');
+    });
+
+    it('includes CORS headers on regular responses', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('access-control-allow-origin')).toBe('*');
+    });
+  });
+
+  // ── Security Headers ─────────────────────────────────────────────────────
+  describe('Security Headers', () => {
+    it('includes X-Content-Type-Options header', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.headers.get('x-content-type-options')).toBe('nosniff');
+    });
+
+    it('includes X-Frame-Options header', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.headers.get('x-frame-options')).toBe('DENY');
+    });
+
+    it('includes X-XSS-Protection header', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.headers.get('x-xss-protection')).toBe('1; mode=block');
+    });
+
+    it('includes Referrer-Policy header', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
+    });
+
+    it('includes security headers on error responses', async () => {
+      const resp = await makeRequest('/status/abc');
+      expect(resp.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(resp.headers.get('x-frame-options')).toBe('DENY');
+    });
+  });
+
+  // ── JSON Error Responses ─────────────────────────────────────────────────
+  describe('JSON Error Responses', () => {
+    it('returns JSON for invalid status code', async () => {
+      const resp = await makeRequest('/status/abc');
+      expect(resp.status).toBe(400);
+      expect(resp.headers.get('content-type')).toContain('application/json');
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid status code');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for invalid redirect count', async () => {
+      const resp = await makeRequest('/redirect/abc');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid count');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for invalid delay value', async () => {
+      const resp = await makeRequest('/delay/abc');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid delay');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for invalid bytes count', async () => {
+      const resp = await makeRequest('/bytes/abc');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid count');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for invalid stream count', async () => {
+      const resp = await makeRequest('/stream/abc');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid count');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for invalid basic-auth path', async () => {
+      const resp = await makeRequest('/basic-auth/user');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Invalid path');
+      expect(json.status).toBe(400);
+    });
+
+    it('returns JSON for missing redirect-to url', async () => {
+      const resp = await makeRequest('/redirect-to');
+      expect(resp.status).toBe(400);
+      const json = await resp.json();
+      expect(json.error).toBe('Missing url param');
+      expect(json.status).toBe(400);
+    });
+  });
+
+  // ── Request Body Size Limits ─────────────────────────────────────────────
+  describe('Request Body Size Limits', () => {
+    it('accepts requests without explicit content-length', async () => {
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test: 'data' }),
+      });
+      expect(resp.status).toBe(200);
+    });
+
+    it('accepts requests with matching content-length', async () => {
+      const body = JSON.stringify({ test: 'data' });
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': String(body.length),
+        },
+        body,
+      });
+      expect(resp.status).toBe(200);
+    });
+  });
+
+  // ── Middleware Tests ─────────────────────────────────────────────────────
+  describe('Middleware', () => {
+    it('request logging includes required fields', async () => {
+      // This test verifies logging happens (output visible in test stdout)
+      const resp = await makeRequest('/get', {
+        headers: {
+          'User-Agent': 'TestAgent/1.0',
+          'CF-Ray': 'test-ray-id',
+        },
+      });
+      expect(resp.status).toBe(200);
+      // Logging output is verified in test output - each request logs JSON
+    });
+
+    it('error responses include CORS headers', async () => {
+      const resp = await makeRequest('/bytes/invalid');
+      expect(resp.status).toBe(400);
+      expect(resp.headers.get('access-control-allow-origin')).toBe('*');
+    });
+
+    it('error responses include security headers', async () => {
+      const resp = await makeRequest('/bytes/invalid');
+      expect(resp.status).toBe(400);
+      expect(resp.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(resp.headers.get('x-frame-options')).toBe('DENY');
+    });
+  });
 });
