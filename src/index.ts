@@ -386,12 +386,13 @@ async function buildReflect(request: Request, url: URL): Promise<ReflectData> {
 
   if (request.body) {
     if (contentType.includes('application/json')) {
+      const text = await request.text();
+      data = text;
       try {
-        const text = await request.text();
         json = JSON.parse(text);
-        data = text;
       } catch {
-        data = await request.text().catch(() => '');
+        // JSON parsing failed, but we already have the text in `data`
+        json = null;
       }
     } else if (contentType.includes('application/x-www-form-urlencoded')) {
       const text = await request.text();

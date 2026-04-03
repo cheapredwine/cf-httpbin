@@ -693,4 +693,198 @@ describe('cf-httpbin', () => {
       expect(data.byteLength).toBeGreaterThan(0);
     });
   });
+
+  // ── Pretty Print ─────────────────────────────────────────────────────────
+  describe('Pretty Print', () => {
+    it('returns minified JSON by default for API clients', async () => {
+      const resp = await makeRequest('/get');
+      expect(resp.status).toBe(200);
+      const text = await resp.text();
+      // Minified JSON should not have newlines or extra spaces
+      expect(text).not.toContain('\n');
+      expect(text).not.toMatch(/:\s{2,}/);
+    });
+
+    it('returns pretty-printed JSON when Accept: text/html header is present', async () => {
+      const resp = await makeRequest('/get', {
+        headers: { 'Accept': 'text/html,application/xhtml+xml' },
+      });
+      expect(resp.status).toBe(200);
+      const text = await resp.text();
+      // Pretty-printed JSON should have newlines and indentation
+      expect(text).toContain('\n');
+      expect(text).toMatch(/\{\n\s{2}/);
+    });
+
+    it('forces pretty-print with ?pretty=1', async () => {
+      const resp = await makeRequest('/get?pretty=1');
+      expect(resp.status).toBe(200);
+      const text = await resp.text();
+      expect(text).toContain('\n');
+      expect(text).toMatch(/\{\n\s{2}/);
+    });
+
+    it('forces minified with ?pretty=0 even for browsers', async () => {
+      const resp = await makeRequest('/get?pretty=0', {
+        headers: { 'Accept': 'text/html,application/xhtml+xml' },
+      });
+      expect(resp.status).toBe(200);
+      const text = await resp.text();
+      expect(text).not.toContain('\n');
+    });
+
+    it('applies pretty-print to /gzip endpoint', async () => {
+      const resp = await makeRequest('/gzip?pretty=1');
+      expect(resp.status).toBe(200);
+      // Response should be compressed, but we can't easily verify the decompressed content
+      // Just verify it returns successfully
+      expect(resp.headers.get('content-type')).toContain('application/json');
+    });
+
+    it('applies pretty-print to /stream endpoint', async () => {
+      const resp = await makeRequest('/stream/2?pretty=1');
+      expect(resp.status).toBe(200);
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+      }
+      // Pretty-printed stream should have newlines and indentation
+      expect(fullText).toMatch(/\{\n\s{2}/);
+    });
+  });
+
+  // ── Documentation & Static Assets ────────────────────────────────────────
+  describe('Documentation & Static Assets', () => {
+    it('/docs returns documentation HTML', async () => {
+      const resp = await makeRequest('/docs');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('content-type')).toContain('text/html');
+      const text = await resp.text();
+      expect(text).toContain('Documentation');
+      expect(text).toContain('cf-httpbin');
+    });
+
+    it('/favicon.svg returns SVG favicon', async () => {
+      const resp = await makeRequest('/favicon.svg');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('content-type')).toBe('image/svg+xml');
+      expect(resp.headers.get('cache-control')).toContain('public');
+      const text = await resp.text();
+      expect(text).toContain('<svg');
+    });
+
+    it('/favicon.ico returns SVG favicon', async () => {
+      const resp = await makeRequest('/favicon.ico');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('content-type')).toBe('image/svg+xml');
+      expect(resp.headers.get('cache-control')).toContain('public');
+      const text = await resp.text();
+      expect(text).toContain('<svg');
+    });
+  });
+
+  // ── Status Code Body Text ────────────────────────────────────────────────
+  describe('Status Code Body Text', () => {
+    it('/status/200 returns "200 OK" in body', async () => {
+      const resp = await makeRequest('/status/200');
+      expect(resp.status).toBe(200);
+      const text = await resp.text();
+      expect(text).toBe('200 OK');
+    });
+
+    it('/status/404 returns "404 Not Found" in body', async () => {
+      const resp = await makeRequest('/status/404');
+      expect(resp.status).toBe(404);
+      const text = await resp.text();
+      expect(text).toBe('404 Not Found');
+    });
+
+    it('/status/418 returns "418 I\'m a Teapot" in body', async () => {
+      const resp = await makeRequest('/status/418');
+      expect(resp.status).toBe(418);
+      const text = await resp.text();
+      expect(text).toBe('418 I\'m a Teapot');
+    });
+
+    it('/status/500 returns "500 Internal Server Error" in body', async () => {
+      const resp = await makeRequest('/status/500');
+      expect(resp.status).toBe(500);
+      const text = await resp.text();
+      expect(text).toBe('500 Internal Server Error');
+    });
+  });
+
+  // ── Additional Edge Cases ────────────────────────────────────────────────
+  describe('Edge Cases', () => {
+    it('/anything accepts POST requests', async () => {
+      const resp = await makeRequest('/anything', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test: 'data' }),
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.method).toBe('POST');
+      expect(json.json).toEqual({ test: 'data' });
+    });
+
+    it('/anything accepts PUT requests', async () => {
+      const resp = await makeRequest('/anything', {
+        method: 'PUT',
+        body: 'raw data',
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.method).toBe('PUT');
+      expect(json.data).toBe('raw data');
+    });
+
+    it('/post handles malformed JSON gracefully', async () => {
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{invalid json}',
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.json).toBeNull();
+      expect(json.data).toBe('{invalid json}');
+    });
+
+    it('/cf detects Worker subrequests via CF-Worker header', async () => {
+      const resp = await makeRequest('/cf', {
+        headers: {
+          'CF-Worker': 'example.com',
+          'CF-Connecting-IP': '1.2.3.4',
+        },
+        cf: {
+          colo: 'SJC',
+          country: 'US',
+        },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.isWorkerSubrequest).toBe(true);
+    });
+
+    it('handles multiple query parameters correctly', async () => {
+      const resp = await makeRequest('/get?foo=bar&baz=qux&foo=duplicate');
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      // URLSearchParams only keeps the last value for duplicate keys
+      expect(json.args.foo).toBe('duplicate');
+      expect(json.args.baz).toBe('qux');
+    });
+
+    it('handles special characters in query parameters', async () => {
+      const resp = await makeRequest('/get?message=' + encodeURIComponent('hello world!@#$%'));
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.args.message).toBe('hello world!@#$%');
+    });
+  });
 });
