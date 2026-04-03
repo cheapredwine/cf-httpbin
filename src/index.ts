@@ -123,7 +123,8 @@ export default {
             'content-type': 'application/json',
             'content-encoding': 'gzip',
           },
-        });
+          encodeBody: 'manual',
+        } as ResponseInit);
       }
 
       if (path === '/deflate') {
@@ -137,7 +138,8 @@ export default {
             'content-type': 'application/json',
             'content-encoding': 'deflate',
           },
-        });
+          encodeBody: 'manual',
+        } as ResponseInit);
       }
 
       // ── Status Codes ──────────────────────────────────────────────────────
