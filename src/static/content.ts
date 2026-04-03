@@ -258,7 +258,7 @@ export const INDEX_HTML = `<!DOCTYPE html>
   <table>
     <tr><th>Endpoint</th><th>Description</th></tr>
     <tr><td><a href="/uuid">/uuid</a></td><td>Returns UUIDv4</td></tr>
-    <tr><td>/base64/:value</td><td>Decodes base64 value</td></tr>
+    <tr><td><a href="/base64/aGVsbG8=">/base64/:value</a></td><td>Decodes base64 value</td></tr>
     <tr><td><a href="/bytes/1024">/bytes/:n</a></td><td>Returns n random bytes (max 100KB)</td></tr>
   </table>
 
