@@ -1155,4 +1155,288 @@ describe('flarebin', () => {
       expect(resp.headers.get('x-frame-options')).toBe('DENY');
     });
   });
+
+  // ── Additional Edge Cases ────────────────────────────────────────────────
+  describe('Additional Edge Cases', () => {
+    // Cookie edge cases
+    it('handles cookies with equals signs in values', async () => {
+      const resp = await makeRequest('/cookies', {
+        headers: { Cookie: 'data=foo=bar; token=abc=def=ghi' },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.cookies.data).toBe('foo=bar');
+      expect(json.cookies.token).toBe('abc=def=ghi');
+    });
+
+    it('handles URL-encoded cookie values', async () => {
+      const resp = await makeRequest('/cookies', {
+        headers: { Cookie: 'encoded=hello%20world; normal=simple' },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      // Cookies are not automatically decoded, they're returned as-is
+      expect(json.cookies.encoded).toBe('hello%20world');
+      expect(json.cookies.normal).toBe('simple');
+    });
+
+    // Auth edge cases
+    it('basic auth handles special characters in password', async () => {
+      // Test with URL-safe special characters in password
+      // Note: Some characters may be URL-encoded in the path, so we use simple ones
+      const specialPass = 'pass-word_123';
+      const resp = await makeRequest(`/basic-auth/user/${specialPass}`, {
+        headers: { Authorization: 'Basic ' + btoa(`user:${specialPass}`) },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.authenticated).toBe(true);
+      expect(json.user).toBe('user');
+    });
+
+    it('bearer auth handles tokens with special characters', async () => {
+      const token = 'token-with_special.chars';
+      const resp = await makeRequest('/bearer', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.token).toBe(token);
+    });
+
+    it('handles malformed Authorization header gracefully', async () => {
+      const resp = await makeRequest('/bearer', {
+        headers: { Authorization: 'NotBearer token123' },
+      });
+      expect(resp.status).toBe(401);
+    });
+
+    // Redirect edge cases
+    it('relative-redirect chains correctly', async () => {
+      // First request to /relative-redirect/2
+      let resp = await makeRequest('/relative-redirect/2');
+      expect(resp.status).toBe(302);
+      expect(resp.headers.get('location')).toBe('/relative-redirect/1');
+
+      // Follow the redirect manually
+      resp = await makeRequest('/relative-redirect/1');
+      expect(resp.status).toBe(302);
+      expect(resp.headers.get('location')).toBe('/get');
+    });
+
+    it('absolute-redirect returns full URL', async () => {
+      const resp = await makeRequest('/absolute-redirect/1');
+      expect(resp.status).toBe(302);
+      const location = resp.headers.get('location');
+      expect(location).toMatch(/^http/);
+      expect(location).toContain('/get');
+    });
+
+    // Request body edge cases
+    it('handles empty JSON body', async () => {
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '',
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.json).toBeNull();
+      expect(json.data).toBe('');
+    });
+
+    it('handles JSON array body', async () => {
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([1, 2, 3]),
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.json).toEqual([1, 2, 3]);
+    });
+
+    it('handles nested JSON objects', async () => {
+      const data = { level1: { level2: { level3: 'deep' } } };
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.json).toEqual(data);
+    });
+
+    it('handles form data with special characters', async () => {
+      const resp = await makeRequest('/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'message=hello%20world&special=a+b=c',
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.form.message).toBe('hello world');
+      expect(json.form.special).toBe('a b=c');
+    });
+
+    // Compression edge cases
+    it('/gzip returns correct content type', async () => {
+      const resp = await makeRequest('/gzip');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('content-type')).toBe('application/json');
+    });
+
+    it('/deflate returns correct content type', async () => {
+      const resp = await makeRequest('/deflate');
+      expect(resp.status).toBe(200);
+      expect(resp.headers.get('content-type')).toBe('application/json');
+    });
+
+    // Delay edge cases
+    it('/delay handles decimal seconds', async () => {
+      const start = Date.now();
+      const resp = await makeRequest('/delay/0.5');
+      const elapsed = Date.now() - start;
+
+      expect(resp.status).toBe(200);
+      expect(elapsed).toBeGreaterThanOrEqual(400);
+      expect(elapsed).toBeLessThan(1500);
+    });
+
+    it('/delay rejects negative values', async () => {
+      const resp = await makeRequest('/delay/-1');
+      expect(resp.status).toBe(400);
+    });
+
+    // UUID edge cases
+    it('/uuid returns valid v4 UUID format', async () => {
+      const resp = await makeRequest('/uuid');
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+
+      // Check v4 UUID format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+      expect(json.uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    });
+
+    // Base64 edge cases
+    it('/base64 handles URL-safe base64', async () => {
+      // Standard base64 with + and /
+      const standardB64 = btoa('hello+world/test');
+      const resp = await makeRequest(`/base64/${standardB64}`);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.decoded).toBe('hello+world/test');
+    });
+
+    // Bytes edge cases
+    it('/bytes/0 returns 400', async () => {
+      const resp = await makeRequest('/bytes/0');
+      expect(resp.status).toBe(400);
+    });
+
+    it('/bytes returns unique data on each request', async () => {
+      const resp1 = await makeRequest('/bytes/100');
+      const resp2 = await makeRequest('/bytes/100');
+
+      const data1 = await resp1.arrayBuffer();
+      const data2 = await resp2.arrayBuffer();
+
+      // Should be different random bytes
+      const arr1 = new Uint8Array(data1);
+      const arr2 = new Uint8Array(data2);
+
+      let same = true;
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          same = false;
+          break;
+        }
+      }
+
+      expect(same).toBe(false);
+    });
+
+    // Stream edge cases
+    it('/stream/0 returns 400', async () => {
+      const resp = await makeRequest('/stream/0');
+      expect(resp.status).toBe(400);
+    });
+
+    it('/stream-bytes/0 returns 400', async () => {
+      const resp = await makeRequest('/stream-bytes/0');
+      expect(resp.status).toBe(400);
+    });
+
+    // Query parameter edge cases
+    it('handles empty query parameter values', async () => {
+      const resp = await makeRequest('/get?empty=&key=value');
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.args.empty).toBe('');
+      expect(json.args.key).toBe('value');
+    });
+
+    it('handles very long query strings', async () => {
+      const longValue = 'x'.repeat(1000);
+      const resp = await makeRequest(`/get?data=${longValue}`);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.args.data).toBe(longValue);
+    });
+
+    // Header edge cases
+    it('handles multiple values for same header', async () => {
+      // Note: Standard Headers object doesn't support multiple values for same key
+      // But we can test that it handles the comma-joined value
+      const resp = await makeRequest('/headers', {
+        headers: { 'X-Custom': 'value1, value2' },
+      });
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.headers['x-custom']).toBe('value1, value2');
+    });
+
+    // 404 edge cases
+    it('returns 404 for non-existent routes', async () => {
+      const resp = await makeRequest('/this-route-does-not-exist');
+      expect(resp.status).toBe(404);
+      expect(await resp.text()).toBe('Not Found');
+    });
+
+    it('returns 404 for partial matches', async () => {
+      const resp = await makeRequest('/get/extra');
+      expect(resp.status).toBe(404);
+    });
+
+    // Status code edge cases
+    it('/status handles multiple codes and returns one', async () => {
+      // Just verify that we get a valid success or client error status
+      const resp = await makeRequest('/status/200,201,204,404');
+      const status = resp.status;
+
+      // Should be one of the requested codes
+      expect([200, 201, 204, 404]).toContain(status);
+    });
+
+    // Method handling edge cases
+    it('/anything handles HEAD requests', async () => {
+      const resp = await makeRequest('/anything', { method: 'HEAD' });
+      expect(resp.status).toBe(200);
+    });
+
+    it('/anything handles OPTIONS requests', async () => {
+      const resp = await makeRequest('/anything', { method: 'OPTIONS' });
+      // OPTIONS is handled by CORS middleware
+      expect(resp.status).toBe(204);
+    });
+
+    // Content negotiation edge cases
+    it('respects Accept header for response format', async () => {
+      const resp = await makeRequest('/get', {
+        headers: { Accept: 'application/json' },
+      });
+      expect(resp.headers.get('content-type')).toContain('application/json');
+    });
+  });
 });
